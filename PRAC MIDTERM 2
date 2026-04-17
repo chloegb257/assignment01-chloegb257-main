@@ -1,0 +1,99 @@
+#include "code.h"
+#include <stdexcept>
+
+Pet* createPets(int size) {
+    if (size < 0) {
+        throw std::runtime_error("Array size cannot be negative");
+    }
+
+    Pet* pets = new Pet[size];
+    return pets;
+}
+
+void deletePets(Pet* pets) {
+    if (pets != nullptr) {
+        delete[] pets;
+    }
+}
+
+void feedPet(Pet& pet, int foodAmount) {
+    if (foodAmount <= 0) {
+        throw std::runtime_error("Food amount should be a positive number!");
+    }
+
+    pet.fullness += foodAmount;
+
+    if (pet.fullness > 100) {
+        pet.fullness = 100;
+    }
+}
+
+void adoptPet(Pet*& pets, int& size, const std::string& name, PetType type) {
+    Pet* new_pets = new Pet[size + 1];
+
+    for (int i = 0; i < size; i++) {
+        new_pets[i] = pets[i];
+    }
+
+    Pet pet;
+    pet.name = name;
+    pet.type = type;
+    pet.fullness = 100;
+
+    new_pets[size] = pet;
+    size++;
+
+    delete[] pets;
+    pets = new_pets;
+}
+
+Pet* filterPets(Pet* pets, int size, PetType type) {
+    int num = 0;
+
+    for (int i = 0; i < size; i++) {
+        if (pets[i].type == type) {
+            num++;
+        }
+    }
+
+    if (num == 0) {
+        return nullptr;
+    }
+
+    Pet* new_pets = new Pet[num];
+
+    num = 0;
+
+    for (int i = 0; i < size; i++) {
+        if (pets[i].type == type) {
+            new_pets[num] = pets[i];
+            num++;
+        }
+    }
+
+    return new_pets;
+}
+
+
+#pragma once
+#include <string>
+enum class PetType{
+    UNKNOWN,
+    DOG,
+    CAT,
+    RABBIT,
+    HAMSTER
+};
+
+struct Pet{
+    std::string name = "missing";
+    PetType type = PetType::UNKNOWN;
+    int fullness = 0;
+};
+
+Pet* createPets(int size);
+void deletePets(Pet* pets);
+void feedPet(Pet& pet, int foodAmount);
+void adoptPet(Pet*& pets, int& size, const std::string& name, PetType type);
+Pet* filterPets(Pet* pets, int size, PetType type);
+
